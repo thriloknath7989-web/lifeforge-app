@@ -1,95 +1,170 @@
-'use client';
-import { useState } from 'react';
+"use client";
+import React, { useState } from "react";
 
-export default function Admin() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+export default function AdminDashboard() {
+  const [curriculumTitle, setCurriculumTitle] = useState("");
+  const [targetAudience, setTargetAudience] = useState("kids");
+  const [strictMode, setStrictMode] = useState(true);
+  const [file, setFile] = useState(null);
+  const [curriculumList, setCurriculumList] = useState([
+    {
+      id: 1,
+      title: "Class 10 Physics - Motion & Force",
+      audience: "Kids / High School",
+      fileName: "physics_ch1.pdf",
+      guardrail: "Strict (Syllabus Only)",
+      aiStatus: "AI Vector Indexed",
+      date: "2026-08-25",
+    },
+  ]);
 
-  const [adminCreds, setAdminCreds] = useState({ user: 'admin', pass: 'admin@123' });
-  const [newPass, setNewPass] = useState('');
-
-  const handleLogin = (e) => {
+  const handleUpload = (e) => {
     e.preventDefault();
-    if (username === adminCreds.user && password === adminCreds.pass) {
-      setIsLoggedIn(true);
-      setError('');
-    } else {
-      setError('Invalid Admin Credentials!');
+    if (!curriculumTitle || !file) {
+      alert("Please enter title and attach a syllabus file!");
+      return;
     }
-  };
 
-  const handleChangePassword = () => {
-    if (!newPass) return;
-    setAdminCreds({ ...adminCreds, pass: newPass });
-    setNewPass('');
-    alert('Admin Password Updated Successfully!');
-  };
+    const newItem = {
+      id: Date.now(),
+      title: curriculumTitle,
+      audience: targetAudience === "kids" ? "Kids Mode" : "Adults Mode",
+      fileName: file.name,
+      guardrail: strictMode ? "Strict (Syllabus Only)" : "Flexible AI",
+      aiStatus: "AI Processed & Guardrail Active",
+      date: new Date().toISOString().split("T")[0],
+    };
 
-  if (!isLoggedIn) {
-    return (
-      <div className="min-h-screen flex items-center justify-center p-4">
-        <form onSubmit={handleLogin} className="glass-card p-8 max-w-md w-full space-y-4">
-          <h2 className="text-2xl font-bold text-white text-center">Admin Access</h2>
-          {error && <p className="text-red-400 text-xs text-center">{error}</p>}
-          <input 
-            type="text" 
-            placeholder="Username (Default: admin)" 
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 text-sm text-white focus:outline-none"
-          />
-          <input 
-            type="password" 
-            placeholder="Password (Default: admin@123)" 
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 text-sm text-white focus:outline-none"
-          />
-          <button type="submit" className="w-full py-3 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-500">
-            Login as Admin
-          </button>
-        </form>
-      </div>
-    );
-  }
+    setCurriculumList([newItem, ...curriculumList]);
+    setCurriculumTitle("");
+    setFile(null);
+    alert("Curriculum Uploaded Successfully! AI will now answer queries only within this document.");
+  };
 
   return (
-    <div className="min-h-screen p-6 max-w-5xl mx-auto space-y-8">
-      <div className="flex justify-between items-center glass-card p-6">
-        <h1 className="text-2xl font-bold text-white">Admin Control Panel</h1>
-        <button onClick={() => setIsLoggedIn(false)} className="px-4 py-2 bg-red-600/20 text-red-400 rounded-xl text-xs font-semibold">
-          Logout
-        </button>
-      </div>
-
-      <div className="grid md:grid-cols-2 gap-6">
-        <div className="glass-card p-6 space-y-4">
-          <h2 className="text-lg font-bold text-white">🔐 Change Admin Password</h2>
-          <input 
-            type="password" 
-            placeholder="Enter New Admin Password" 
-            value={newPass}
-            onChange={(e) => setNewPass(e.target.value)}
-            className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 text-sm text-white focus:outline-none"
-          />
-          <button onClick={handleChangePassword} className="w-full py-2 bg-indigo-600 text-white text-sm font-semibold rounded-xl">
-            Update Password
-          </button>
+    <div className="min-h-screen bg-slate-950 text-white p-6 font-sans">
+      <div className="max-w-5xl mx-auto space-y-8">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-6">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 bg-gradient-to-tr from-purple-600 to-cyan-400 rounded-2xl flex items-center justify-center font-black text-xl shadow-lg shadow-purple-500/20">
+              LF
+            </div>
+            <div>
+              <h1 className="text-2xl font-black tracking-wide">LifeForge Admin Console</h1>
+              <p className="text-xs text-slate-400 mt-0.5">Syllabus Upload & Strict Guardrail Manager</p>
+            </div>
+          </div>
+          <span className="px-4 py-1.5 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded-full text-xs font-bold uppercase tracking-wider flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Strict AI Scope Active
+          </span>
         </div>
 
-        <div className="glass-card p-6 space-y-4">
-          <h2 className="text-lg font-bold text-white">📊 System Metrics</h2>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="p-4 bg-slate-900/50 rounded-xl text-center">
-              <p className="text-2xl font-bold text-indigo-400">12</p>
-              <p className="text-xs text-slate-400">Active Users</p>
+        {/* Curriculum Upload & Strict Rules */}
+        <div className="p-8 bg-slate-900/80 border border-slate-800 rounded-3xl backdrop-blur-xl shadow-2xl space-y-6">
+          <h2 className="text-lg font-bold text-slate-100 flex items-center gap-2">
+            <span>📤</span> Upload Syllabus / Curriculum Document
+          </h2>
+          <p className="text-xs text-slate-400 leading-relaxed">
+            Upload course material (PDF / Text). The AI will automatically ignore waste/extra topics and ONLY answer queries directly present in this file.
+          </p>
+
+          <form onSubmit={handleUpload} className="space-y-5">
+            <div>
+              <label className="block text-xs font-semibold uppercase text-slate-400 mb-2">
+                Syllabus Title
+              </label>
+              <input
+                type="text"
+                required
+                placeholder="e.g. CBSE Class 10 Biology - Cellular Respiration"
+                className="w-full p-3.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white outline-none focus:border-purple-500 transition"
+                value={curriculumTitle}
+                onChange={(e) => setCurriculumTitle(e.target.value)}
+              />
             </div>
-            <div className="p-4 bg-slate-900/50 rounded-xl text-center">
-              <p className="text-2xl font-bold text-green-400">5</p>
-              <p className="text-xs text-slate-400">Certificates Issued</p>
+
+            <div className="grid md:grid-cols-2 gap-5">
+              <div>
+                <label className="block text-xs font-semibold uppercase text-slate-400 mb-2">
+                  Target Learning Mode
+                </label>
+                <select
+                  className="w-full p-3.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white outline-none focus:border-purple-500 transition"
+                  value={targetAudience}
+                  onChange={(e) => setTargetAudience(e.target.value)}
+                >
+                  <option value="kids">👶 Kids Mode (Comics & Games Only)</option>
+                  <option value="adults">🎓 Adult Mode (Concept Modules & Analytics)</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold uppercase text-slate-400 mb-2">
+                  Attach Curriculum File (PDF / TXT)
+                </label>
+                <input
+                  type="file"
+                  required
+                  accept=".pdf,.txt,.docx"
+                  className="w-full text-xs text-slate-400 file:mr-4 file:py-3 file:px-5 file:rounded-xl file:border-0 file:bg-purple-600 file:text-white file:font-semibold hover:file:bg-purple-500 cursor-pointer bg-slate-950 border border-slate-800 rounded-xl p-2"
+                  onChange={(e) => setFile(e.target.files[0])}
+                />
+              </div>
             </div>
+
+            {/* Guardrail Toggle */}
+            <div className="p-4 bg-slate-950 border border-slate-800 rounded-2xl flex items-center justify-between">
+              <div>
+                <h4 className="text-xs font-bold text-slate-200">Strict Syllabus Scope (Ignore Waste Topics)</h4>
+                <p className="text-[11px] text-slate-400 mt-0.5">When ENABLED, AI rejects questions outside this syllabus file.</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setStrictMode(!strictMode)}
+                className={`px-4 py-2 rounded-xl text-xs font-bold transition ${
+                  strictMode
+                    ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40"
+                    : "bg-slate-800 text-slate-400"
+                }`}
+              >
+                {strictMode ? "ENABLED (Strict Scope)" : "DISABLED (Open Search)"}
+              </button>
+            </div>
+
+            <button
+              type="submit"
+              className="w-full py-4 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 font-bold text-sm rounded-xl transition shadow-lg shadow-purple-600/30 active:scale-98"
+            >
+              Upload & Activate Guardrail Scope
+            </button>
+          </form>
+        </div>
+
+        {/* Uploaded Vault */}
+        <div className="p-8 bg-slate-900/80 border border-slate-800 rounded-3xl space-y-5">
+          <h2 className="text-lg font-bold text-slate-100">Active Curriculum Vault</h2>
+          <div className="space-y-3">
+            {curriculumList.map((item) => (
+              <div
+                key={item.id}
+                className="p-4 bg-slate-950 border border-slate-800 rounded-2xl flex items-center justify-between text-xs"
+              >
+                <div>
+                  <h4 className="font-bold text-slate-200 text-sm">{item.title}</h4>
+                  <p className="text-slate-500 mt-1 text-[11px]">
+                    File: <span className="text-cyan-400">{item.fileName}</span> | Rules:{" "}
+                    <span className="text-emerald-400">{item.guardrail}</span>
+                  </p>
+                </div>
+                <div className="text-right">
+                  <span className="px-2.5 py-1 bg-purple-500/10 text-purple-400 border border-purple-500/30 rounded-lg text-[10px] block w-fit ml-auto">
+                    {item.aiStatus}
+                  </span>
+                  <span className="text-slate-500 text-[10px] mt-1 block">{item.date}</span>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
