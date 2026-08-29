@@ -1,24 +1,21 @@
 {
-"name": "LifeForge - AI Study & Fitness Hub",
-"short_name": "LifeForge",
-"description": "AI Powered Study Hub, Fitness Tracker, and Habit Breaker Platform",
-"start_url": "/dashboard",
-"display": "standalone",
-"background_color": "#0f172a",
-"theme_color": "#0f172a",
-"orientation": "portrait",
-"icons": [
-{
-"src": "https://api.dicebear.com/7.x/identicon/svg?seed=LifeForge",
-"sizes": "192x192",
-"type": "image/svg+xml",
-"purpose": "any maskable"
-},
-{
-"src": "https://api.dicebear.com/7.x/identicon/svg?seed=LifeForge",
-"sizes": "512x512",
-"type": "image/svg+xml",
-"purpose": "any maskable"
-}
-]
+  "name": "LifeForge App",
+  "short_name": "LifeForge",
+  "description": "AI Study Hub, Workouts & Habit Tracker",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#f4f7fb",
+  "theme_color": "#0f172a",
+  "icons": [
+    {
+      "src": "https://api.dicebear.com/7.x/identicon/svg?seed=LifeForge",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "https://api.dicebear.com/7.x/identicon/svg?seed=LifeForge",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ]
 }
