@@ -1,233 +1,170 @@
 "use client";
-
-import { useState } from "react";
-
-export default function AdminPanel() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [adminUser, setAdminUser] = useState("");
-  const [adminPass, setAdminPass] = useState("");
-  const [activeTab, setActiveTab] = useState("users");
-
-  const [eduType, setEduType] = useState("school");
-  const [selectedClass, setSelectedClass] = useState(null);
-
-  const [curriculums, setCurriculums] = useState([
-    { id: 1, title: "Telugu Syllabus PDF" }
-  ]);
-
-  const [linksList, setLinksList] = useState([
-    { id: 1, name: "Physics Lab Kit", url: "https://amazon.in/dp/example" }
-  ]);
-  const [newLinkName, setNewLinkName] = useState("");
-  const [newLinkUrl, setNewLinkUrl] = useState("");
-
-  const handleAdminLogin = (e) => {
-    e.preventDefault();
-    if (adminUser === "Admin" && adminPass === "Admin@123") {
-      setIsLoggedIn(true);
-    } else {
-      alert("Invalid Admin Credentials!");
-    }
-  };
-
-  const addCurriculum = () => {
-    setCurriculums([...curriculums, { id: Date.now(), title: "New Subject Curriculum" }]);
-  };
-
-  const removeCurriculum = (id) => {
-    setCurriculums(curriculums.filter((c) => c.id !== id));
-  };
-
-  if (!isLoggedIn) {
-    return (
-      <div className="min-h-screen bg-slate-900 flex justify-center items-center p-4">
-        <form onSubmit={handleAdminLogin} className="bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl flex flex-col gap-4">
-          <div className="text-center mb-2">
-            <h1 className="text-2xl font-black text-slate-800">LifeForge Admin</h1>
-            <p className="text-xs text-slate-500">Access Management Panel</p>
-          </div>
-          <input
-            type="text"
-            placeholder="Username (Admin)"
-            value={adminUser}
-            onChange={(e) => setAdminUser(e.target.value)}
-            className="border p-3 rounded-xl text-sm outline-none"
-            required
-          />
-          <input
-            type="password"
-            placeholder="Password (Admin@123)"
-            value={adminPass}
-            onChange={(e) => setAdminPass(e.target.value)}
-            className="border p-3 rounded-xl text-sm outline-none"
-            required
-          />
-          <button type="submit" className="bg-blue-600 text-white font-bold py-3 rounded-xl shadow-lg">
-            Login to Admin
-          </button>
-        </form>
-      </div>
-    );
-  }
-
-  return (
-    <div className="min-h-screen bg-slate-100 p-4 md:p-8">
-      <header className="flex justify-between items-center bg-white p-4 rounded-2xl shadow-sm border border-slate-200 mb-6">
-        <h1 className="text-xl font-extrabold text-slate-900">LifeForge Control Center</h1>
-        <button onClick={() => setIsLoggedIn(false)} className="text-xs font-bold text-red-600 bg-red-50 px-3 py-1.5 rounded-xl">
-          Logout
-        </button>
-      </header>
-
-      {/* TABS */}
-      <div className="grid grid-cols-3 gap-3 mb-6">
-        <button
-          onClick={() => setActiveTab("users")}
-          className={`p-3 rounded-2xl font-bold text-xs border ${
-            activeTab === "users" ? "bg-blue-600 text-white" : "bg-white text-slate-700"
-          }`}
-        >
-          👥 Users
-        </button>
-        <button
-          onClick={() => setActiveTab("analytics")}
-          className={`p-3 rounded-2xl font-bold text-xs border ${
-            activeTab === "analytics" ? "bg-emerald-600 text-white" : "bg-white text-slate-700"
-          }`}
-        >
-          📈 Analytics
-        </button>
-        <button
-          onClick={() => setActiveTab("links")}
-          className={`p-3 rounded-2xl font-bold text-xs border ${
-            activeTab === "links" ? "bg-purple-600 text-white" : "bg-white text-slate-700"
-          }`}
-        >
-          🔗 Links
-        </button>
-      </div>
-
-      {activeTab === "users" && (
-        <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm">
-          <div className="grid grid-cols-2 gap-3 mb-6">
-            <button
-              onClick={() => setEduType("school")}
-              className={`py-2 rounded-xl text-xs font-bold ${eduType === "school" ? "bg-amber-500 text-white" : "bg-slate-100"}`}
-            >
-              School (1st - 10th)
-            </button>
-            <button
-              onClick={() => setEduType("college")}
-              className={`py-2 rounded-xl text-xs font-bold ${eduType === "college" ? "bg-indigo-600 text-white" : "bg-slate-100"}`}
-            >
-              College (Inter, Diploma, BTech)
-            </button>
-          </div>
-
-          {eduType === "school" && (
-            <div>
-              <p className="text-xs font-bold text-slate-500 mb-2">Select Class:</p>
-              <div className="flex gap-2 overflow-x-auto pb-4">
-                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((c) => (
-                  <button
-                    key={c}
-                    onClick={() => setSelectedClass(c)}
-                    className={`px-4 py-2 rounded-xl text-xs font-bold border whitespace-nowrap ${
-                      selectedClass === c ? "bg-amber-500 text-white" : "bg-slate-50"
-                    }`}
-                  >
-                    Class {c}
-                  </button>
-                ))}
-              </div>
-
-              {selectedClass >= 5 && (
-                <div className="mt-6 border-t pt-4">
-                  <div className="flex justify-between items-center mb-3">
-                    <h4 className="font-extrabold text-xs text-slate-700">Class {selectedClass} Curriculums</h4>
-                    <button onClick={addCurriculum} className="bg-blue-600 text-white text-xs px-3 py-1.5 rounded-xl font-bold">
-                      + Add Curriculum Block
-                    </button>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    {curriculums.map((curr) => (
-                      <div key={curr.id} className="border p-3 rounded-2xl bg-slate-50 flex justify-between items-center">
-                        <div>
-                          <p className="text-xs font-bold text-slate-800">{curr.title}</p>
-                          <input type="file" className="text-[10px] mt-1" />
-                        </div>
-                        <button onClick={() => removeCurriculum(curr.id)} className="text-rose-600 font-bold text-xs p-1">
-                          Remove
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      )}
-
-      {activeTab === "analytics" && (
-        <div className="bg-white rounded-3xl p-6 border shadow-sm">
-          <h2 className="font-extrabold text-xs mb-4">User Activity Growth Chart</h2>
-          <div className="h-48 flex items-end justify-between gap-2 border-b border-l p-4 bg-slate-50 rounded-2xl">
-            {[40, 65, 80, 55, 90, 100].map((val, i) => (
-              <div key={i} className="flex-1 bg-emerald-500 rounded-t-lg" style={{ height: `${val}%` }}></div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {activeTab === "links" && (
-        <div className="bg-white rounded-3xl p-6 border shadow-sm">
-          <h2 className="font-extrabold text-xs mb-4">Manage Links</h2>
-          <div className="flex flex-col gap-2 mb-4 border p-4 rounded-2xl bg-slate-50">
-            <input
-              type="text"
-              placeholder="Link Name"
-              value={newLinkName}
-              onChange={(e) => setNewLinkName(e.target.value)}
-              className="p-2 border rounded-xl text-xs outline-none"
-            />
-            <input
-              type="text"
-              placeholder="Target URL"
-              value={newLinkUrl}
-              onChange={(e) => setNewLinkUrl(e.target.value)}
-              className="p-2 border rounded-xl text-xs outline-none"
-            />
-            <button
-              onClick={() => {
-                if (newLinkName && newLinkUrl) {
-                  setLinksList([...linksList, { id: Date.now(), name: newLinkName, url: newLinkUrl }]);
-                  setNewLinkName("");
-                  setNewLinkUrl("");
-                }
-              }}
-              className="bg-purple-600 text-white font-bold py-2 rounded-xl text-xs mt-1"
-            >
-              Add Link
-            </button>
-          </div>
-
-          <div className="flex flex-col gap-2">
-            {linksList.map((link) => (
-              <div key={link.id} className="p-3 border rounded-xl flex justify-between items-center text-xs">
-                <div>
-                  <p className="font-bold">{link.name}</p>
-                  <p className="text-slate-400">{link.url}</p>
-                </div>
-                <button onClick={() => setLinksList(linksList.filter((l) => l.id !== link.id))} className="text-rose-600 font-bold">
-                  Delete
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
-  );
+​import { useState } from "react";
+import { useRouter } from "next/navigation";
+​export default function AdminPage() {
+const router = useRouter();
+​const [notifTitle, setNotifTitle] = useState("");
+const [notifBody, setNotifBody] = useState("");
+const [broadcastStatus, setBroadcastStatus] = useState("");
+​const [chapterTitle, setChapterTitle] = useState("");
+const [subject, setSubject] = useState("Physics");
+const [contentStatus, setContentStatus] = useState("");
+​const handleBroadcast = (e) => {
+e.preventDefault();
+if (!notifTitle || !notifBody) return;
+setBroadcastStatus("Sending...");
+​if ("Notification" in window && Notification.permission === "granted") {
+new Notification(📢 ${notifTitle}, { body: notifBody });
 }
+​setTimeout(() => {
+setBroadcastStatus("✅ Broadcast Push Sent Successfully!");
+setNotifTitle("");
+setNotifBody("");
+setTimeout(() => setBroadcastStatus(""), 3000);
+}, 800);
+};
+​const handleAddChapter = (e) => {
+e.preventDefault();
+if (!chapterTitle) return;
+setContentStatus("Adding...");
+setTimeout(() => {
+setContentStatus(✅ "${chapterTitle}" added to ${subject}!);
+setChapterTitle("");
+setTimeout(() => setContentStatus(""), 3000);
+}, 600);
+};
+​return (
+<div className="max-w-[480px] mx-auto min-h-screen bg-[#f4f7fb] pb-28 font-sans text-slate-900">
+​{/* 1. TOP HEADER */}
+<div className="flex items-center justify-between px-5 pt-6 pb-4 bg-white/80 backdrop-blur-md sticky top-0 z-40 border-b border-slate-100">
+<div className="flex items-center gap-3">
+<button
+onClick={() => router.push("/dashboard")}
+className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center font-black text-slate-700 active:scale-95 transition-transform"
+>
+←
+</button>
+<div>
+<h1 className="text-xl font-black">⚙️ Admin Control</h1>
+<p className="text-[10px] font-bold text-purple-600 uppercase tracking-wider">Super Admin Console</p>
+</div>
+</div>
+<span className="bg-purple-100 text-purple-700 text-[10px] font-black px-2.5 py-1 rounded-full uppercase">
+LIVE
+</span>
+</div>
+​{/* 2. SYSTEM ANALYTICS METRICS */}
+<div className="px-5 mt-5 mb-6">
+<h2 className="text-sm font-black mb-3 text-slate-800">System Performance</h2>
+<div className="grid grid-cols-2 gap-3">
+<div className="bg-white p-4 rounded-[22px] shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] border border-slate-100">
+<span className="text-xl">👥</span>
+<h3 className="text-2xl font-black text-slate-900 mt-1">1,248</h3>
+<p className="text-[10px] font-bold text-slate-400">Total Active Users</p>
+</div>
+​<div className="bg-white p-4 rounded-[22px] shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] border border-slate-100">
+<span className="text-xl">🤖</span>
+<h3 className="text-2xl font-black text-slate-900 mt-1">3,890</h3>
+<p className="text-[10px] font-bold text-slate-400">AI Exams Evaluated</p>
+</div>
+</div>
+</div>
+​{/* 3. PUSH NOTIFICATION BROADCASTER */}
+<div className="px-5 mb-6">
+<div className="bg-gradient-to-br from-indigo-900 via-indigo-950 to-slate-900 p-5 rounded-[28px] text-white shadow-xl">
+<h3 className="font-black text-sm flex items-center gap-2 mb-3">
+<span>📢</span> Broadcast Push Notification
+</h3>
+​<form onSubmit={handleBroadcast} className="flex flex-col gap-3">
+<input
+type="text"
+placeholder="Notification Title..."
+value={notifTitle}
+onChange={(e) => setNotifTitle(e.target.value)}
+className="w-full bg-white/10 border border-white/10 rounded-xl p-3 text-xs font-semibold text-white placeholder-slate-400 outline-none"
+/>
+​<textarea
+rows={2}
+placeholder="Notification Message Body..."
+value={notifBody}
+onChange={(e) => setNotifBody(e.target.value)}
+className="w-full bg-white/10 border border-white/10 rounded-xl p-3 text-xs font-medium text-white placeholder-slate-400 outline-none resize-none"
+/>
+​<button 
+type="submit"
+className="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-3 rounded-xl text-xs active:scale-95 transition-all"
+>
+🚀 SEND PUSH NOW
+</button>
+</form>
+​{broadcastStatus && (
+<p className="text-xs font-bold text-green-400 mt-3 text-center bg-green-900/40 py-1.5 rounded-lg">
+{broadcastStatus}
+</p>
+)}
+</div>
+</div>
+​{/* 4. CONTENT MANAGER */}
+<div className="px-5 mb-6">
+<div className="bg-white p-5 rounded-[28px] shadow-md border border-slate-100">
+<h3 className="font-black text-sm mb-3 text-slate-900">📚 Add Study Hub Chapter</h3>
+​<form onSubmit={handleAddChapter} className="flex flex-col gap-3">
+<div className="flex gap-2">
+{["Physics", "Chemistry", "Maths"].map((sub) => (
+<button
+key={sub}
+type="button"
+onClick={() => setSubject(sub)}
+className={flex-1 py-2 rounded-xl text-xs font-bold transition-all ${ subject === sub ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-600" }}
+>
+{sub}
+</button>
+))}
+</div>
+​<input
+type="text"
+placeholder="Chapter Title..."
+value={chapterTitle}
+onChange={(e) => setChapterTitle(e.target.value)}
+className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-bold text-slate-800 outline-none"
+/>
+​<button 
+type="submit"
+className="w-full bg-slate-900 text-white font-black py-3 rounded-xl text-xs active:scale-95 transition-transform"
+>
+➕ ADD TO SYLLABUS
+</button>
+</form>
+​{contentStatus && (
+<p className="text-xs font-bold text-blue-600 mt-3 text-center bg-blue-50 py-1.5 rounded-lg">
+{contentStatus}
+</p>
+)}
+</div>
+</div>
+​{/* GLASS BOTTOM NAV */}
+<div className="fixed bottom-4 left-1/2 -translate-x-1/2 w-[90%] max-w-[440px] bg-white/70 backdrop-blur-xl rounded-full shadow-[0_8px_30px_rgba(0,0,0,0.1)] border border-white/50 px-5 py-3.5 flex justify-between items-center z-50">
+<button onClick={() => router.push("/dashboard")} className="flex flex-col items-center gap-1 text-slate-400 hover:text-slate-900">
+<span className="text-lg">🏠</span>
+<span className="text-[9px] font-bold tracking-wider">HOME</span>
+</button>
+<button onClick={() => router.push("/courses")} className="flex flex-col items-center gap-1 text-slate-400 hover:text-slate-900">
+<span className="text-lg">📖</span>
+<span className="text-[9px] font-bold tracking-wider">COURSES</span>
+</button>
+<button onClick={() => router.push("/workouts")} className="flex flex-col items-center gap-1 text-slate-400 hover:text-slate-900">
+<span className="text-lg">🏋️</span>
+<span className="text-[9px] font-bold tracking-wider">WORKOUTS</span>
+</button>
+<button onClick={() => router.push("/habits")} className="flex flex-col items-center gap-1 text-slate-400 hover:text-slate-900">
+<span className="text-lg">🛡️</span>
+<span className="text-[9px] font-bold tracking-wider">HABITS</span>
+</button>
+<button onClick={() => router.push("/admin")} className="flex flex-col items-center gap-1 text-purple-600 font-black">
+<span className="text-lg">⚙️</span>
+<span className="text-[9px] font-black tracking-wider">ADMIN</span>
+</button>
+</div>
+​</div>
+);
+                }
