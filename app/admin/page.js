@@ -1,173 +1,233 @@
 "use client";
-import React, { useState } from "react";
 
-export default function AdminDashboard() {
-  const [curriculumTitle, setCurriculumTitle] = useState("");
-  const [targetAudience, setTargetAudience] = useState("kids");
-  const [strictMode, setStrictMode] = useState(true);
-  const [file, setFile] = useState(null);
-  const [curriculumList, setCurriculumList] = useState([
-    {
-      id: 1,
-      title: "Class 10 Physics - Motion & Force",
-      audience: "Kids / High School",
-      fileName: "physics_ch1.pdf",
-      guardrail: "Strict (Syllabus Only)",
-      aiStatus: "AI Vector Indexed",
-      date: "2026-08-25",
-    },
+import { useState } from "react";
+
+export default function AdminPanel() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [adminUser, setAdminUser] = useState("");
+  const [adminPass, setAdminPass] = useState("");
+  const [activeTab, setActiveTab] = useState("users");
+
+  const [eduType, setEduType] = useState("school");
+  const [selectedClass, setSelectedClass] = useState(null);
+
+  const [curriculums, setCurriculums] = useState([
+    { id: 1, title: "Telugu Syllabus PDF" }
   ]);
 
-  const handleUpload = (e) => {
+  const [linksList, setLinksList] = useState([
+    { id: 1, name: "Physics Lab Kit", url: "https://amazon.in/dp/example" }
+  ]);
+  const [newLinkName, setNewLinkName] = useState("");
+  const [newLinkUrl, setNewLinkUrl] = useState("");
+
+  const handleAdminLogin = (e) => {
     e.preventDefault();
-    if (!curriculumTitle || !file) {
-      alert("Please enter title and attach a syllabus file!");
-      return;
+    if (adminUser === "Admin" && adminPass === "Admin@123") {
+      setIsLoggedIn(true);
+    } else {
+      alert("Invalid Admin Credentials!");
     }
-
-    const newItem = {
-      id: Date.now(),
-      title: curriculumTitle,
-      audience: targetAudience === "kids" ? "Kids Mode" : "Adults Mode",
-      fileName: file.name,
-      guardrail: strictMode ? "Strict (Syllabus Only)" : "Flexible AI",
-      aiStatus: "AI Processed & Guardrail Active",
-      date: new Date().toISOString().split("T")[0],
-    };
-
-    setCurriculumList([newItem, ...curriculumList]);
-    setCurriculumTitle("");
-    setFile(null);
-    alert("Curriculum Uploaded Successfully! AI will now answer queries only within this document.");
   };
 
-  return (
-    <div className="min-h-screen bg-slate-950 text-white p-6 font-sans">
-      <div className="max-w-5xl mx-auto space-y-8">
-        {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-6">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-gradient-to-tr from-purple-600 to-cyan-400 rounded-2xl flex items-center justify-center font-black text-xl shadow-lg shadow-purple-500/20">
-              LF
-            </div>
-            <div>
-              <h1 className="text-2xl font-black tracking-wide">LifeForge Admin Console</h1>
-              <p className="text-xs text-slate-400 mt-0.5">Syllabus Upload & Strict Guardrail Manager</p>
-            </div>
+  const addCurriculum = () => {
+    setCurriculums([...curriculums, { id: Date.now(), title: "New Subject Curriculum" }]);
+  };
+
+  const removeCurriculum = (id) => {
+    setCurriculums(curriculums.filter((c) => c.id !== id));
+  };
+
+  if (!isLoggedIn) {
+    return (
+      <div className="min-h-screen bg-slate-900 flex justify-center items-center p-4">
+        <form onSubmit={handleAdminLogin} className="bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl flex flex-col gap-4">
+          <div className="text-center mb-2">
+            <h1 className="text-2xl font-black text-slate-800">LifeForge Admin</h1>
+            <p className="text-xs text-slate-500">Access Management Panel</p>
           </div>
-          <span className="px-4 py-1.5 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded-full text-xs font-bold uppercase tracking-wider flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Strict AI Scope Active
-          </span>
-        </div>
+          <input
+            type="text"
+            placeholder="Username (Admin)"
+            value={adminUser}
+            onChange={(e) => setAdminUser(e.target.value)}
+            className="border p-3 rounded-xl text-sm outline-none"
+            required
+          />
+          <input
+            type="password"
+            placeholder="Password (Admin@123)"
+            value={adminPass}
+            onChange={(e) => setAdminPass(e.target.value)}
+            className="border p-3 rounded-xl text-sm outline-none"
+            required
+          />
+          <button type="submit" className="bg-blue-600 text-white font-bold py-3 rounded-xl shadow-lg">
+            Login to Admin
+          </button>
+        </form>
+      </div>
+    );
+  }
 
-        {/* Curriculum Upload & Strict Rules */}
-        <div className="p-8 bg-slate-900/80 border border-slate-800 rounded-3xl backdrop-blur-xl shadow-2xl space-y-6">
-          <h2 className="text-lg font-bold text-slate-100 flex items-center gap-2">
-            <span>📤</span> Upload Syllabus / Curriculum Document
-          </h2>
-          <p className="text-xs text-slate-400 leading-relaxed">
-            Upload course material (PDF / Text). The AI will automatically ignore waste/extra topics and ONLY answer queries directly present in this file.
-          </p>
+  return (
+    <div className="min-h-screen bg-slate-100 p-4 md:p-8">
+      <header className="flex justify-between items-center bg-white p-4 rounded-2xl shadow-sm border border-slate-200 mb-6">
+        <h1 className="text-xl font-extrabold text-slate-900">LifeForge Control Center</h1>
+        <button onClick={() => setIsLoggedIn(false)} className="text-xs font-bold text-red-600 bg-red-50 px-3 py-1.5 rounded-xl">
+          Logout
+        </button>
+      </header>
 
-          <form onSubmit={handleUpload} className="space-y-5">
-            <div>
-              <label className="block text-xs font-semibold uppercase text-slate-400 mb-2">
-                Syllabus Title
-              </label>
-              <input
-                type="text"
-                required
-                placeholder="e.g. CBSE Class 10 Biology - Cellular Respiration"
-                className="w-full p-3.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white outline-none focus:border-purple-500 transition"
-                value={curriculumTitle}
-                onChange={(e) => setCurriculumTitle(e.target.value)}
-              />
-            </div>
+      {/* TABS */}
+      <div className="grid grid-cols-3 gap-3 mb-6">
+        <button
+          onClick={() => setActiveTab("users")}
+          className={`p-3 rounded-2xl font-bold text-xs border ${
+            activeTab === "users" ? "bg-blue-600 text-white" : "bg-white text-slate-700"
+          }`}
+        >
+          👥 Users
+        </button>
+        <button
+          onClick={() => setActiveTab("analytics")}
+          className={`p-3 rounded-2xl font-bold text-xs border ${
+            activeTab === "analytics" ? "bg-emerald-600 text-white" : "bg-white text-slate-700"
+          }`}
+        >
+          📈 Analytics
+        </button>
+        <button
+          onClick={() => setActiveTab("links")}
+          className={`p-3 rounded-2xl font-bold text-xs border ${
+            activeTab === "links" ? "bg-purple-600 text-white" : "bg-white text-slate-700"
+          }`}
+        >
+          🔗 Links
+        </button>
+      </div>
 
-            <div className="grid md:grid-cols-2 gap-5">
-              <div>
-                <label className="block text-xs font-semibold uppercase text-slate-400 mb-2">
-                  Target Learning Mode
-                </label>
-                <select
-                  className="w-full p-3.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white outline-none focus:border-purple-500 transition"
-                  value={targetAudience}
-                  onChange={(e) => setTargetAudience(e.target.value)}
-                >
-                  <option value="kids">👶 Kids Mode (Comics & Games Only)</option>
-                  <option value="adults">🎓 Adult Mode (Concept Modules & Analytics)</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold uppercase text-slate-400 mb-2">
-                  Attach Curriculum File (PDF / TXT)
-                </label>
-                <input
-                  type="file"
-                  required
-                  accept=".pdf,.txt,.docx"
-                  className="w-full text-xs text-slate-400 file:mr-4 file:py-3 file:px-5 file:rounded-xl file:border-0 file:bg-purple-600 file:text-white file:font-semibold hover:file:bg-purple-500 cursor-pointer bg-slate-950 border border-slate-800 rounded-xl p-2"
-                  onChange={(e) => setFile(e.target.files[0])}
-                />
-              </div>
-            </div>
-
-            {/* Guardrail Toggle */}
-            <div className="p-4 bg-slate-950 border border-slate-800 rounded-2xl flex items-center justify-between">
-              <div>
-                <h4 className="text-xs font-bold text-slate-200">Strict Syllabus Scope (Ignore Waste Topics)</h4>
-                <p className="text-[11px] text-slate-400 mt-0.5">When ENABLED, AI rejects questions outside this syllabus file.</p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setStrictMode(!strictMode)}
-                className={`px-4 py-2 rounded-xl text-xs font-bold transition ${
-                  strictMode
-                    ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40"
-                    : "bg-slate-800 text-slate-400"
-                }`}
-              >
-                {strictMode ? "ENABLED (Strict Scope)" : "DISABLED (Open Search)"}
-              </button>
-            </div>
-
+      {activeTab === "users" && (
+        <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm">
+          <div className="grid grid-cols-2 gap-3 mb-6">
             <button
-              type="submit"
-              className="w-full py-4 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 font-bold text-sm rounded-xl transition shadow-lg shadow-purple-600/30 active:scale-98"
+              onClick={() => setEduType("school")}
+              className={`py-2 rounded-xl text-xs font-bold ${eduType === "school" ? "bg-amber-500 text-white" : "bg-slate-100"}`}
             >
-              Upload & Activate Guardrail Scope
+              School (1st - 10th)
             </button>
-          </form>
-        </div>
+            <button
+              onClick={() => setEduType("college")}
+              className={`py-2 rounded-xl text-xs font-bold ${eduType === "college" ? "bg-indigo-600 text-white" : "bg-slate-100"}`}
+            >
+              College (Inter, Diploma, BTech)
+            </button>
+          </div>
 
-        {/* Uploaded Vault */}
-        <div className="p-8 bg-slate-900/80 border border-slate-800 rounded-3xl space-y-5">
-          <h2 className="text-lg font-bold text-slate-100">Active Curriculum Vault</h2>
-          <div className="space-y-3">
-            {curriculumList.map((item) => (
-              <div
-                key={item.id}
-                className="p-4 bg-slate-950 border border-slate-800 rounded-2xl flex items-center justify-between text-xs"
-              >
+          {eduType === "school" && (
+            <div>
+              <p className="text-xs font-bold text-slate-500 mb-2">Select Class:</p>
+              <div className="flex gap-2 overflow-x-auto pb-4">
+                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((c) => (
+                  <button
+                    key={c}
+                    onClick={() => setSelectedClass(c)}
+                    className={`px-4 py-2 rounded-xl text-xs font-bold border whitespace-nowrap ${
+                      selectedClass === c ? "bg-amber-500 text-white" : "bg-slate-50"
+                    }`}
+                  >
+                    Class {c}
+                  </button>
+                ))}
+              </div>
+
+              {selectedClass >= 5 && (
+                <div className="mt-6 border-t pt-4">
+                  <div className="flex justify-between items-center mb-3">
+                    <h4 className="font-extrabold text-xs text-slate-700">Class {selectedClass} Curriculums</h4>
+                    <button onClick={addCurriculum} className="bg-blue-600 text-white text-xs px-3 py-1.5 rounded-xl font-bold">
+                      + Add Curriculum Block
+                    </button>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {curriculums.map((curr) => (
+                      <div key={curr.id} className="border p-3 rounded-2xl bg-slate-50 flex justify-between items-center">
+                        <div>
+                          <p className="text-xs font-bold text-slate-800">{curr.title}</p>
+                          <input type="file" className="text-[10px] mt-1" />
+                        </div>
+                        <button onClick={() => removeCurriculum(curr.id)} className="text-rose-600 font-bold text-xs p-1">
+                          Remove
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
+      {activeTab === "analytics" && (
+        <div className="bg-white rounded-3xl p-6 border shadow-sm">
+          <h2 className="font-extrabold text-xs mb-4">User Activity Growth Chart</h2>
+          <div className="h-48 flex items-end justify-between gap-2 border-b border-l p-4 bg-slate-50 rounded-2xl">
+            {[40, 65, 80, 55, 90, 100].map((val, i) => (
+              <div key={i} className="flex-1 bg-emerald-500 rounded-t-lg" style={{ height: `${val}%` }}></div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {activeTab === "links" && (
+        <div className="bg-white rounded-3xl p-6 border shadow-sm">
+          <h2 className="font-extrabold text-xs mb-4">Manage Links</h2>
+          <div className="flex flex-col gap-2 mb-4 border p-4 rounded-2xl bg-slate-50">
+            <input
+              type="text"
+              placeholder="Link Name"
+              value={newLinkName}
+              onChange={(e) => setNewLinkName(e.target.value)}
+              className="p-2 border rounded-xl text-xs outline-none"
+            />
+            <input
+              type="text"
+              placeholder="Target URL"
+              value={newLinkUrl}
+              onChange={(e) => setNewLinkUrl(e.target.value)}
+              className="p-2 border rounded-xl text-xs outline-none"
+            />
+            <button
+              onClick={() => {
+                if (newLinkName && newLinkUrl) {
+                  setLinksList([...linksList, { id: Date.now(), name: newLinkName, url: newLinkUrl }]);
+                  setNewLinkName("");
+                  setNewLinkUrl("");
+                }
+              }}
+              className="bg-purple-600 text-white font-bold py-2 rounded-xl text-xs mt-1"
+            >
+              Add Link
+            </button>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            {linksList.map((link) => (
+              <div key={link.id} className="p-3 border rounded-xl flex justify-between items-center text-xs">
                 <div>
-                  <h4 className="font-bold text-slate-200 text-sm">{item.title}</h4>
-                  <p className="text-slate-500 mt-1 text-[11px]">
-                    File: <span className="text-cyan-400">{item.fileName}</span> | Rules:{" "}
-                    <span className="text-emerald-400">{item.guardrail}</span>
-                  </p>
+                  <p className="font-bold">{link.name}</p>
+                  <p className="text-slate-400">{link.url}</p>
                 </div>
-                <div className="text-right">
-                  <span className="px-2.5 py-1 bg-purple-500/10 text-purple-400 border border-purple-500/30 rounded-lg text-[10px] block w-fit ml-auto">
-                    {item.aiStatus}
-                  </span>
-                  <span className="text-slate-500 text-[10px] mt-1 block">{item.date}</span>
-                </div>
+                <button onClick={() => setLinksList(linksList.filter((l) => l.id !== link.id))} className="text-rose-600 font-bold">
+                  Delete
+                </button>
               </div>
             ))}
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
